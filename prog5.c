@@ -24,25 +24,68 @@ int main ( int argc, char **argv )
 		char str[40];
 		char temp;
 		int wordCount;
+		int charCount;
+		int *charFreq;
+		int *sizeFreq;
+//		char **dictArr;
+		char *dictArr;
+		char dictStr[40];
+		int i;
 
-	// Open all novel files
+	// Set initial values and allocate memory
 		count = 1;
 		wordCount = 0;
+		charCount = 0;
+		charFreq = (int*) malloc(26*sizeof(int));
+		sizeFreq = (int*) malloc(40*sizeof(int));
+		i = 0;
 
+	// Upload dictionary.txt to an array
+		file = fopen("dictionary.txt", "r");
+		while (fscanf(file, "%s", dictStr) != EOF)
+		{
+			i++;
+			memset(dictStr, 0, sizeof(dictStr));
+		//	printf("%s", dictStr);
+		}
+	//	char dictArr[i][40];
+//(char**) 
+//		dictArr = (char**) calloc(i, 40*sizeof(char *));
+//		dictArr = (char*) calloc(i, 41*sizeof(char *));
+		dictArr = (char*) malloc(i*41*sizeof(char *));
+		i = 0;
+		rewind(file);
+		while (fscanf(file, "%s", dictStr) != EOF)
+		{
+			printf("%s\n", dictStr);
+//			memset(dictArr[i], '\0', sizeof(dictArr[i]));
+//			dictArr[i] = (char) calloc(sizeof(dictStr)+1, sizeof(char));
+			strcpy(&dictArr[i], dictStr);
+//			&dictArr[i] = dictStr;
+			printf("%s\n", &dictArr[i]);
+			i++;
+			memset(dictStr, 0, sizeof(dictStr));
+		}
+
+
+	// Open all novel files
 		do
 		{
 			memset(fileName, 0, sizeof(fileName));
 			sprintf(fileName, "%s_%d.txt", argv[1], count);
 			file = fopen(fileName, "r");
 			while (file != NULL && fscanf(file, "%c", &temp) != EOF)
-		//	while (file != NULL && fscanf(file, "%s", str) != EOF)
 			{
-		//		if (sizeof(str) < 15)
-		//			printf("%s", str);
-		//		memset(str, 0, sizeof(str));
 				if (temp == ' ' || temp == '-')
 				{
-					wordCount++;
+					// Total Word Count
+						wordCount++;
+
+					// String Size Count
+						sizeFreq[strlen(str)]++;
+			//			printf("sizeFreq_%ld b/c of %s = %d", (strlen(str)), str, sizeFreq[strlen(str)]);
+						
+					
 					memset(str, 0, sizeof(str));
 				}
 				else if (temp == '.' || temp == '?' || temp == '!' || temp == '\n')
@@ -50,7 +93,19 @@ int main ( int argc, char **argv )
 				else if (isalpha(temp))
 				{
 					sprintf(str, "%s%c", str, temp);
-		//			printf("%s\n", str);
+					charCount++;
+
+					// Letter Count
+						if (isupper(temp))
+						{
+							charFreq[temp - 65]++;
+			//				printf("charFreq_%c = %d\n", temp, charFreq[temp - 65]);
+						}
+						else
+						{
+							charFreq[temp - 97]++;
+			//				printf("charFreq_%c = %d\n", temp, charFreq[temp - 97]);
+						}
 				}
 			}
 			count++;	

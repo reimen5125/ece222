@@ -31,6 +31,7 @@ int main ( int argc, char **argv )
 		char **dictArr;
 		char dictStr[40];
 		int dictLen;
+		int *dictNum;
 		int i;
 		int j;
 		int k;
@@ -38,6 +39,8 @@ int main ( int argc, char **argv )
 		char **notDict;
 		int contains;
 		char **ousArr;
+		char **letArr;
+		int letCount;
 
 	// Set initial values and allocate memory
 		count = 1;
@@ -48,8 +51,8 @@ int main ( int argc, char **argv )
 		i = 0;
 		j = 0;
 		contains = 0;
-		ousArr = (char**) malloc(999*41*sizeof(char *));
 		ousCount = 0;
+		letCount = 0;
 
 	// Upload dictionary.txt to an array
 		file = fopen("dictionary.txt", "r");
@@ -64,7 +67,10 @@ int main ( int argc, char **argv )
 		dictLen = i - 1;
 
 		dictArr = (char **)malloc(dictLen*sizeof(char *));
+		dictNum = (int *)calloc(dictLen, sizeof(int));
 		notDict = (char**) malloc(dictLen*46*sizeof(char *));
+		ousArr = (char**) malloc(999*46*sizeof(char *));
+		letArr = (char **) malloc(dictLen*46*sizeof(char *));
 
 		rewind(file);
 
@@ -134,7 +140,11 @@ int main ( int argc, char **argv )
 						//		if (strcmp(notDict[i], str) == 0)
 						//		if (strstr(notDict[i], str) != NULL && ( strlen(notDict[i]) == strlen(str) ))
 								if (strstr(notDict[i], str) != NULL)
+								{
+									dictNum[i]++;
 									contains = 2;
+						//			printf("dictNum[%d] = %s [%d])", i, notDict[i], dictNum[i]);
+								}
 							}
 							if (contains == 0)
 							{
@@ -150,24 +160,29 @@ int main ( int argc, char **argv )
 						contains = 0;
 						if (strstr(str, "ous") != NULL)
 						{
+							printf("testing testing");
+							printf("ousArr[%d] = %s\n", ousCount, ousArr[ousCount]);
 							for (i = 0; i < ousCount; i++)
 							{
-								if (strcmp(ousArr[i], str) == 0)
+								if (strstr(ousArr[i], str) != NULL)
 									contains = 1;
 							}
 							if (contains == 0)
 							{
-						//		ousArr[ousCount] = (char *)malloc(46*sizeof(char));
-						//		strcpy(ousArr[ousCount], str);
-						//		printf("ousArr[%d] = %s\n", ousCount, &ousArr[ousCount]);
-						//		ousCount++;
+								ousArr[ousCount] = (char *)malloc(46*sizeof(char));
+								strcpy(ousArr[ousCount], str);
+								printf("ousArr[%d] = %s\n", ousCount, ousArr[ousCount]);
+								ousCount++;
 							}
 						}
 
 					// ACESLMTW Check
 						if (strspn(str, "ACESLMTWaceslmtw") == strlen(str))
 						{
-					//		printf("strspn = %s\n", str);	
+							letArr[letCount] = (char *)malloc(46*sizeof(char));
+							strcpy(letArr[letCount], str);
+					//		printf("strspn = %s %s\n", str, letArr[letCount]);
+							letCount++;	
 						}
 					
 					memset(str, 0, sizeof(str));
@@ -205,13 +220,15 @@ int main ( int argc, char **argv )
 
 
 	// Output Results
-	//	sprintf(fileName, "%s.txt", argv[2]);
-	//	file = fopen(fileName, "w");
+		sprintf(fileName, "%s.txt", argv[2]);
+		file = fopen(fileName, "w");
 
-	//	fprintf(file, "Total Novel Words = %d\n", wordCount);
+		fprintf(file, "Total Novel Words = %d\n", wordCount);
 
-	//	fclose(file);
+		fclose(file);
 
+
+	// Free Memory
 		free(charFreq);
 		free(sizeFreq);
 		for (i = 0; i < j; i++)

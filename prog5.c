@@ -28,15 +28,19 @@ int main ( int argc, char **argv )
 		int charCount;
 		int *charFreq;
 		int *sizeFreq;
-		char *dictArr;
+//		char *dictArr;
+		char **dictArr;
 		char dictStr[40];
 		int dictLen;
 		int i;
 		int j;
+		int k;
 		int ousCount;
 		char *notDict;
 		int contains;
 		char *ousArr;
+//		int c;
+//		int stop = 0;
 
 	// Set initial values and allocate memory
 		count = 1;
@@ -53,31 +57,91 @@ int main ( int argc, char **argv )
 
 	// Upload dictionary.txt to an array
 		file = fopen("dictionary.txt", "r");
-		while (fscanf(file, "%s", dictStr) != EOF)
+//		fscanf(file, "%s", dictStr);
+/*		stop = 0;
+		while (stop == 0)
 		{
+		if ((c = getc(dictStr)) == EOF)
+		{
+			stop = 1;
+			break;
+		}
+*/
+//		while (fscanf(file, "%s", dictStr) != EOF)
+//		while (strchr( fscanf(file, "%s", dictStr), EOF ) < 1)
+//		while (!feof(file))
+//		while (stop == 0)
+//		while (strcmp(dictStr, "zurich"))
+		while (fgets(dictStr, 41, file) != NULL)
+		{
+			// fscanf(file, "%s", &dictStr[0]);
+//			fscanf(file, "%s", dictStr);
+//			printf("dictStr = %s", dictStr);
+/*			for (j = 0; j < sizeof(dictStr); j++)
+			{
+				if ((int)(dictStr[j]) == "Zurich")
+				{
+					stop = 1;
+					break;
+				}
+*/
 			i++;
 			memset(dictStr, 0, sizeof(dictStr));
+//			if (stop == 1)
+//				break;
+//			}
 		}
-		dictArr = (char*) malloc(i*41*sizeof(char *));
-		i = 0;
+//		}
+
+		dictLen = i - 1;
+
+//		dictArr = (char*) malloc(i*41*sizeof(char *));
+//		dictArr = malloc(i*41*sizeof(char)); // *));
+		dictArr = (char **)malloc(dictLen*sizeof(char *));
+//		i = 0;
+//		stop = 0;
 		rewind(file);
-		while (fscanf(file, "%s", dictStr) != EOF)
+//		while (fscanf(file, "%s", dictStr) != EOF)
+//		while (strchr( fscanf(file, "%s", dictStr), EOF ) < 1)
+//		while (!feof(file))
+//		fscanf(file, "%s", dictStr);
+//		while (stop == 0)
+		for (i = 0; i < dictLen; i++)
 		{
-		//	printf("%s\n", dictStr);
-			strcpy(&dictArr[i], dictStr);
-		//	printf("%s\n", &dictArr[i]);
-			i++;
+//		if ((c = getchar(dictStr)) == EOF)
+//		{
+//			stop = 1;
+//			break;
+//		}
+//			fscanf(file, "%s", dictStr);
+			fgets(dictStr, 41, file);
+
+			for (k = 0; k < 41; k++)
+			{
+				dictStr[k] = toupper(dictStr[k]);
+		//		putchar(toupper(dictStr[k]));
+			}
+	//		printf("%s\n", dictStr);
+			dictArr[i] = (char *)malloc(41*sizeof(char));
+//			strcpy(&dictArr[i], dictStr);
+			strncpy(dictArr[i], dictStr, strlen(dictStr));
+			puts(dictArr[i]);
+//			&dictArr[i] = dictStr;
 			memset(dictStr, 0, sizeof(dictStr));
+//			printf("%s\n", &dictArr[i]);
+//			i++;
 		}
-		dictLen = i;
-	//	fclose(file);
+		fclose(file);
+
+		for (i = 0; i < dictLen; i++)
+			printf("%s\n", dictArr[i]);
 
 	// Open and analyze all novel files
 		do
 		{
 			memset(fileName, 0, sizeof(fileName));
 			sprintf(fileName, "%s_%d.txt", argv[1], count);
-			printf("testing testing right before fopen\n");
+	//		printf("testing testing right before fopen\n");
 			if( access( fileName, F_OK ) != -1 )
 				file = fopen(fileName, "r");
 			else
@@ -95,21 +159,22 @@ int main ( int argc, char **argv )
 			//			printf("sizeFreq_%ld b/c of %s = %d", (strlen(str)), str, sizeFreq[strlen(str)]);
 
 					// Dictionary Check
-						for (i = 0; i <= dictLen; i++)
+						for (i = 0; i < dictLen; i++)
 						{
-							if (strcmp(&dictArr[i], str) == 0)
+							if (strcmp(dictArr[i], str) == 0)
+					//		printf("%s\n", &dictArr[3]);
 					//		if (strcmpi(&dictArr[i], str) == 0)
-					//		if (&dictArr[i] == str)
 								contains = 1;
+					//		if (&dictArr[i] == 
 						}
 						if (contains == 0)
 						{
 							for (i = 0; i <= j; i++)
 							{
 					//			if (strcmpi(&dictArr[i], str) == 0)
-								if (strcmp(&dictArr[i], str) == 0)
-					//			if (&notDict[i] == str)
+								if (strcmp(&notDict[i], str) == 0)
 									contains = 2;
+					//			if (&notDict[i] == str)
 							}
 							if (contains == 0)
 							{
@@ -118,13 +183,6 @@ int main ( int argc, char **argv )
 								++j;
 							}
 						}
-
-
-
-
-
-
-
 
 					// "OUS" Check
 						if (strstr(str, "ous") != NULL)
@@ -135,20 +193,21 @@ int main ( int argc, char **argv )
 						}
 
 					// ACESLMTW Check
-						if (strspn(str, "ACESLMTWaceslmtw") == strlen(str))	
-							printf("strspn = %s\n", str);	
+						if (strspn(str, "ACESLMTWaceslmtw") == strlen(str))
+						{
+						//	printf("strspn = %s\n", str);	
+						}
 					
 					memset(str, 0, sizeof(str));
-					printf("str check 1 = %s\n", str);
+	//				printf("str check 1 = %s\n", str);
 				}
 				else if (isalpha(temp))
 				{
-//***************************SEG FAULT IN NEXT TWO LINES***********
-					printf("str check 2 = %s\n", str);
+			//		printf("str check 2 = %s\n", str);
 	//				strcat(str, temp);
 					sprintf(str, "%s%c", str, temp);
 					charCount++;
-					printf("str check 3 = %s\n", str);
+			//		printf("str check 3 = %s\n", str);
 
 					// Letter Count
 						if (isupper(temp))
@@ -161,6 +220,10 @@ int main ( int argc, char **argv )
 							charFreq[temp - 97]++;
 			//				printf("charFreq_%c = %d\n", temp, charFreq[temp - 97]);
 						}
+					for (k = 0; k < 41; k++)
+					{
+						str[k] = toupper(str[k]);
+					}
 				}
 			}
 
@@ -168,12 +231,13 @@ int main ( int argc, char **argv )
 
 
 
-		//	fclose(file);
+//			fclose(file);
 			count++;
 		}
 		while (file != NULL);
 		
-	//	memset(fileName, 0, sizeof(fileName));
+		
+		memset(fileName, 0, sizeof(fileName));
 
 	// Output Results
 	//	sprintf(fileName, "%s.txt", argv[2]);
@@ -183,12 +247,15 @@ int main ( int argc, char **argv )
 
 	//	fclose(file);
 
-//		free(charFreq);
-//		free(sizeFreq);
-//		free(notDict);
-//		free(ousArr);
-//		free(dictArr);	
-
+		free(charFreq);
+		free(sizeFreq);
+		free(notDict);
+		free(ousArr);
+		for (i = 0; i < dictLen; i++)
+		{
+			free(dictArr[i]);	
+		}
+		free(dictArr);
 
 	return 0;
 

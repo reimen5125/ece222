@@ -41,13 +41,14 @@ int main ( int argc, char **argv )
 		char **ousArr;
 		char **letArr;
 		int letCount;
+		int notCount;
 
 	// Set initial values and allocate memory
 		count = 1;
 		wordCount = 0;
 		charCount = 0;
 		charFreq = (int*) malloc(26*sizeof(int));
-		sizeFreq = (int*) malloc(40*sizeof(int));
+		sizeFreq = (int*) malloc(46*sizeof(int));
 		i = 0;
 		j = 0;
 		contains = 0;
@@ -119,26 +120,14 @@ int main ( int argc, char **argv )
 						contains = 0;
 						for (i = 0; i < dictLen; i++)
 						{
-				//			printf("dictArr[%d] = %s\tstr = %s\n", i, dictArr[i], str);
-					//		if (strcmp(dictArr[i], str) == 0)
-					//		if (strstr(dictArr[i], str) != NULL && ( strlen(dictArr[i]) == strlen(str) ) )
 							if (strstr(dictArr[i], str) != NULL)
-					//		if (&dictArr[i] == str)
-					//		if (strstr(str, dictArr[i]))
-							{
 								contains = 1;
-								// break;
-							}
 						}
 
 						if (contains == 0)
 						{
 							for (i = 0; i < j; i++)
 							{
-						//		if (strcmp(&notDict[i], str) == 0)
-						//		if (&notDict[i] == str)
-						//		if (strcmp(notDict[i], str) == 0)
-						//		if (strstr(notDict[i], str) != NULL && ( strlen(notDict[i]) == strlen(str) ))
 								if (strstr(notDict[i], str) != NULL)
 								{
 									dictNum[i]++;
@@ -149,12 +138,13 @@ int main ( int argc, char **argv )
 							if (contains == 0)
 							{
 								notDict[j] = (char *)malloc(46*sizeof(char));
-					//			strcpy(&notDict[j], str);
 								strcpy(notDict[j], str);
 					//			printf("NEW STRING_%d  %s\n",j , notDict[j]);
+								dictNum[i]++;
 								j++;
 							}
 						}
+						notCount = j;
 
 					// "OUS" Check
 						contains = 0;
@@ -223,7 +213,36 @@ int main ( int argc, char **argv )
 		sprintf(fileName, "%s.txt", argv[2]);
 		file = fopen(fileName, "w");
 
-		fprintf(file, "Total Novel Words = %d\n", wordCount);
+		fprintf(file, "Total Novel Words = %d\n\n", wordCount);
+		for (i = 0; i < 26; i++)
+		{
+			fprintf(file, "Total Letters %c = %d = %4.2f%%\n", (char)(i + 65), charFreq[i], (float)charFreq[i]/charCount*100);
+		}
+		fprintf(file, "\n");
+		for (i = 1; i < 46; i++)
+		{
+			if (sizeFreq[i] > 0)
+			{
+				fprintf(file, "Total Words of Length %d = %d\n", i, sizeFreq[i]);
+			}
+		}
+		fprintf(file, "\nAddendum Words:\n");
+		for (i = 0; i < notCount; i++)
+		{
+			fprintf(file, "Word[%d] = %s [%d]\n", i, notDict[i], dictNum[i]);
+			printf("Word[%d] = %s [%d]\n", i, notDict[i], dictNum[i]);
+		}
+		fprintf(file, "\nWords containing the string \"OUS\"\n");
+		for (i = 0; i < ousCount; i++)
+		{
+			fprintf(file, "SubStringWord[%d] = %s", i, ousArr[i]);
+		}
+		fprintf(file, "\nWords only made up of the letters \"ACESLMTW\"\n");
+		for (i = 0; i < letCount; i++)
+		{
+			fprintf(file, "SpecialWord[%d] = %s\n", i, letArr[i]);
+			printf("SpecialWord[%d] = %s\n", i, letArr[i]);
+		}
 
 		fclose(file);
 

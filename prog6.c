@@ -33,60 +33,41 @@ int main(void)
 		int child3;
 		int child4;
 		int i;
-		int found = 0;
-		char loc1[20];
-		char loc2[20];
-		char loc3[20];
-		char loc4[20];
-
+		int found;
+		int *term;
+//		char loc1[20];
+//		char loc2[20];
+//		char loc3[20];
+//		char loc4[20];
+		term = (int *)calloc(4, sizeof(int));
 	// Terminal number(s) find
 		system("ls -l /dev/pts");
 
+		found = 0;
 		i = 0;
-		while (i < 200 && found < 4);
+		while (i < 2000 && found < 4)
 		{
 			// num = system("ls -l /dev/pts");
-//			system("ls -l /dev/pts");
-	//		if(fileno(stdin))
-	//			printf("terminal = %d", fileno(stdin));
-	
-	//		sprintf(output, "grep bar %d", num);
-	//		sprintf(output, "%d%d", num, i);
 			sprintf(var, "/dev/pts/%d", i);
-	//		file = popen(output, "r");
 			file = fopen(var, "r");
 			if (file != NULL)
 			{
-				switch (found)
-				{
-					case 0:
-						strcpy(loc1, var);
-						found++;
-						printf("loc1 = %s", loc1);
-						break;
-					case 1:
-						strcpy(loc2, var);
-						found++;
-						printf("loc2 = %s", loc2);
-						break;
-					case 2:
-						strcpy(loc3, var);
-						found++;
-						printf("loc3 = %s", loc3);
-						break;
-					case 3:
-						strcpy(loc4, var);
-						found++;
-						printf("loc4 = %s", loc4);
-						break;
-				}
+				term[found] = i;
+				found++;
 			}
-//			while (file != NULL && fscanf(file, "%c", &temp) != EOF)
-//			{
-//				fgets(temp, 46, file);
-//				printf("testing testing %s ", temp);
-//			}
 			i++;
+			if (file != NULL)
+				fclose(file);
+		}
+
+	// Print to terminals
+		for (i = 0; i < found; i++)
+		{
+			sprintf(var, "/dev/pts/%d", term[i]);
+			file = fopen(var, "w");
+			fprintf(file, "testing, testing\n");
+			if (file != NULL)
+				fclose(file);
 		}
 
 	// Print start date and time of the mission

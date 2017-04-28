@@ -20,7 +20,7 @@ int main(void)
 		FILE *file;
 		char var[20];
 		time_t t;
-		int sub;
+//		int sub;
 		int parent;
 		int child1;
 		int child2;
@@ -86,7 +86,7 @@ int main(void)
 //		parent = getpid();
 //		printf("parent = %d = %d\n", parent, getpid());
 
-		sub = fork();
+//		sub = fork();
 /*		if (sub != 0)	// parent
 		{
 			parent = sub;
@@ -94,6 +94,7 @@ int main(void)
 		}
 */
 //		else	// children
+/*
 		if (sub == 0)
 		{
 			sub = fork();
@@ -270,6 +271,155 @@ int main(void)
 
 
 	free(term);
+*/
+
+	if (!(child1 = fork()))
+	{
+		// Calculations
+			sprintf(var, "/dev/pts/%d", term[0]);
+			file = fopen(var, "w");
+
+			while (cont == 1)
+			{
+				sleep(1);
+				srand(time(NULL) + 2);
+				fuel = fuel - ( rand() % 100 + 100 );
+				sleep(1);
+				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+					fprintf(file, "successful mission\n");
+				else if (fuel <= 0)
+				{
+					cont = 0;
+					fprintf(file, "unsuccessful mission\n");
+					exit(0);
+				}
+				else if (missiles <= 0)
+				{
+					ret = 1;
+					dist_ret = dist_go;
+				}
+				sleep(1);
+				t = 0;
+				time(&t);
+				tm_info = localtime(&t);
+				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+				fprintf(file, "%s\n", outTime);
+				if (ret == 0)
+				{
+					srand(time(NULL) + 3);
+					dist_go = dist_go + ( rand() % 5 + 5);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 1, fuel, missiles, dist_go);
+				}
+				else
+				{
+					srand(time(NULL) + 4);
+					dist_ret = dist_ret - ( rand() % 5 + 3);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 1, fuel, missiles, dist_ret);
+				}
+			}
+	}
+	else if (!(child2 = fork()))
+	{
+		// Calculations
+			sprintf(var, "/dev/pts/%d", term[1]);
+			file = fopen(var, "w");
+
+			while (cont == 1)
+			{
+				sleep(1);
+				srand(time(NULL) + 2);
+				fuel = fuel - ( rand() % 100 + 100 );
+				sleep(1);
+				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+					fprintf(file, "successful mission\n");
+				else if (fuel <= 0)
+				{
+					cont = 0;
+					fprintf(file, "unsuccessful mission\n");
+					exit(0);
+				}
+				else if (missiles <= 0)
+				{
+					ret = 1;
+					dist_ret = dist_go;
+				}
+				sleep(1);
+				t = 0;
+				time(&t);
+				tm_info = localtime(&t);
+				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+				fprintf(file, "%s\n", outTime);
+				if (ret == 0)
+				{
+					srand(time(NULL) + 3);
+					dist_go = dist_go + ( rand() % 5 + 5);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_go);
+				}
+				else
+				{
+					srand(time(NULL) + 4);
+					dist_ret = dist_ret - ( rand() % 5 + 3);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_ret);
+				}
+			}
+	}
+	else if (!(child3 = fork()))
+	{
+		// Calculations
+			sprintf(var, "/dev/pts/%d", term[2]);
+			file = fopen(var, "w");
+
+			while (cont == 1)
+			{
+				sleep(1);
+				srand(time(NULL) + 2);
+				fuel = fuel - ( rand() % 100 + 100 );
+				sleep(1);
+				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+					fprintf(file, "successful mission\n");
+				else if (fuel <= 0)
+				{
+					cont = 0;
+					fprintf(file, "unsuccessful mission\n");
+					exit(0);
+				}
+				else if (missiles <= 0)
+				{
+					ret = 1;
+					dist_ret = dist_go;
+				}
+
+				sleep(1);
+				t = 0;
+				time(&t);
+				tm_info = localtime(&t);
+				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+				fprintf(file, "%s\n", outTime);
+
+				if (ret == 0)
+				{
+					srand(time(NULL) + 3);
+					dist_go = dist_go + ( rand() % 5 + 5);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 3, fuel, missiles, dist_go);
+				}
+				else
+				{
+					srand(time(NULL) + 4);
+					dist_ret = dist_ret - ( rand() % 5 + 3);
+					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 3, fuel, missiles, dist_ret);
+				}
+			}
+	}
+	else if (!(child4 = fork()))
+	{
+		
+	}
+	else
+	{
+		parent = getpid();
+		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\nchild4 = %d\n", parent, child1, child2, child3, child4);
+	}
+	sleep(2);
 
 	return 0;
 }

@@ -19,15 +19,25 @@
 #include <sys/wait.h>
 
 typedef void (*ptr);
+void sigkill1(int);
 
 int missiles;
 int fuel;
 int currentChild;
+int done = 0;
 
-void sigkill (int signum)
+void sigkill1 (int signum)
 {
-	kill(currentChild, SIGFPE);
+//	kill(currentChild, SIGFPE);
 }
+
+
+/*
+void sigkill(int sig)
+{
+    kill(currentChild, SIGKILL);
+}
+*/
 
 void launchMissile (int signum)
 {
@@ -44,7 +54,7 @@ void addFuel (int signum)
 	printf("Sub %d has fuel level of %d gallons.\n", currentChild, fuel);
 }
 
-int kill(pid_t pid, int sig);
+// int kill(pid_t pid, int sig);
 
 int main(void)
 {
@@ -78,7 +88,7 @@ int main(void)
 	// Install signals
 		signal(SIGUSR1, (ptr)launchMissile);
 		signal(SIGUSR2, (ptr)addFuel);
-		signal(SIGFPE, (ptr)sigkill);
+		signal(SIGKILL, sigkill1);
 		
 
 	// Terminal number(s) find
@@ -135,11 +145,15 @@ int main(void)
 				fuel = fuel - ( rand() % 100 + 100 );
 				sleep(1);
 				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+				{
 					fprintf(file, "successful mission\n");
+					done++;
+				}
 				else if (fuel <= 0)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
+					done++;
 					exit(0);
 				}
 				else if (missiles <= 0)
@@ -185,12 +199,14 @@ int main(void)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
+					done++;
 					exit(0);
 				}
 				else if (missiles <= 0)
 				{
 					ret = 1;
 					dist_ret = dist_go;
+					done++;
 				}
 				sleep(1);
 				t = 0;
@@ -230,12 +246,14 @@ int main(void)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
+					done++;
 					exit(0);
 				}
 				else if (missiles <= 0)
 				{
 					ret = 1;
 					dist_ret = dist_go;
+					done++;
 				}
 
 				sleep(1);
@@ -261,7 +279,81 @@ int main(void)
 	}
 	else if (!(child4 = fork()))
 	{
-		
+//		while (kill(var1, 0) && kill(var2, 0) && kill(var3, 0) && kill(varPar, 0))
+		while (1)
+		{
+//			fgets(dictStr, 46, file) != NULL
+			if ( fgets(command, 20, stdin) != NULL )
+			{
+				if (strstr(command, "l1"))
+				{
+					kill(child1, SIGUSR1);
+					currentChild = 1;
+				}
+				else if (strstr(command, "l2"))
+				{
+					kill(child2, SIGUSR1);
+					currentChild = 2;
+				}
+				else if (strstr(command, "l3"))
+				{
+					kill(child3, SIGUSR1);
+					currentChild = 3;
+				}
+				else if (strstr(command, "r1"))
+				{
+					printf("confirmed\n");
+					sprintf(var, "/dev/pts/%d", term[0]);
+					file = fopen(var, "w");
+//					fprintf(file, "Sub 1 killed\n");
+//					kill(SIGFPE, sigkill);
+//					kill(SIGFPE, sigkill);
+//					kill(term[0], SIGFPE);
+//					kill(term[0], sigkill);
+
+//					kill(term[0], SIGUSR2);
+//					sigkill1(getpid(), SIGKILL);
+					kill(getpid(), SIGKILL);
+					currentChild = 1;
+				}
+				else if (strstr(command, "r2"))
+				{
+					file = fopen(var2, "w");
+					fprintf(file, "Sub 2 killed\n");
+					kill(child2, SIGUSR2);
+					currentChild = 2;
+				}
+				else if (strstr(command, "r3"))
+				{
+					file = fopen(var3, "w");
+					fprintf(file, "Sub 3 killed\n");
+					kill(child3, SIGUSR2);
+					currentChild = 3;
+				}
+				else if (strstr(command, "q"))
+				{
+//					kill(child4, SIGFPE);
+					done = 3;
+					break;
+//					exit(0);
+				}
+				else if (strstr(command, "s1"))
+				{
+					sprintf(var, "/dev/pts/%d", term[0]);
+					file = fopen(var, "w");
+					kill(child1, SIGKILL);//SIGKILL);
+				}
+				else if (strstr(command, "s2"))
+					kill(child2, SIGKILL);
+				else if (strstr(command, "s3"))
+					kill(child3, SIGKILL);
+
+//				kill(child3, SIGUSR2);
+//				printf("testing, testing");
+
+			}
+//				printf("testing, testing");
+		}
 	}
 	else
 	{
@@ -272,56 +364,21 @@ int main(void)
 		sprintf(var2, "/dev/pts/%d", child2);
 		sprintf(var3, "/dev/pts/%d", child3);
 		sprintf(varPar, "/dev/pts/%d", parent);
-		while (kill(var1, 0) && kill(var2, 0) && kill(var3, 0) && kill(varPar, 0))
-		{
-//			fgets(dictStr, 46, file) != NULL
-			if ( fgets(command, 20, stdin) != NULL )
-			{
-				if (strcmp(command, "l1"))
-				{
-					kill(child1, SIGUSR1);
-					currentChild = 1;
-				}
-				else if (strcmp(command, "l2"))
-				{
-					kill(child2, SIGUSR1);
-					currentChild = 2;
-				}
-				else if (strcmp(command, "l3"))
-				{
-					kill(child3, SIGUSR1);
-					currentChild = 3;
-				}
-				else if (strcmp(command, "r1"))
-				{
-					kill(child1, SIGUSR2);
-					currentChild = 1;
-				}
-				else if (strcmp(command, "r2"))
-				{
-					kill(child2, SIGUSR2);
-					currentChild = 2;
-				}
-				else if (strcmp(command, "r3"))
-				{
-					kill(child3, SIGUSR2);
-					currentChild = 3;
-				}
-				else if (strcmp(command, "q"))
-					exit(0);
-				else if (strcmp(command, "s1"))
-					sigkill(child1);
-/*				else if (strmp(command, "s2"))
-					kill(child2);
-				else if (strcmp(command, "s3"))
-					kill(child3);
-*/				kill(child3, SIGUSR2);
-				printf("testing, testing");
-			}
-				printf("testing, testing");
+
+		if (done == 3)
+		{	
+			t = 0;
+			time(&t);
+			tm_info = localtime(&t);
+			strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+			fprintf(file, "%s\n", outTime);
+
+			kill(child4, SIGKILL);
+//			kill(child4, SIGFPE);
 		}
+
 	}
-	sleep(2);
+	sleep(7);
 
 	free(term);
 

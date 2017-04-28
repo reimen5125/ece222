@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-// #include <io.h>
-// #include <signal.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
@@ -82,18 +80,21 @@ int main(void)
 		srand(time(NULL) + 1);
 		missiles = rand() % 4 + 6;	// initial missiles (5-10) [-]
 		dist_go = 0;	// initial distance from base (0) [miles]
-		sprintf(var, "/dev/pts/%d", term[2]);
-		file = fopen(var, "w");
 		cont = 1;
 
 	// Fork children and assign pid's
+//		parent = getpid();
+//		printf("parent = %d = %d\n", parent, getpid());
+
 		sub = fork();
-		if (sub != 0)	// parent
+/*		if (sub != 0)	// parent
 		{
 			parent = sub;
 			printf("parent = %d\n", parent);
 		}
-		else	// children
+*/
+//		else	// children
+		if (sub == 0)
 		{
 			sub = fork();
 			if (sub == 0)
@@ -113,22 +114,32 @@ int main(void)
 						printf("child3 = %d\n", child3);
 
 						// Calculations
+							sprintf(var, "/dev/pts/%d", term[2]);
+							file = fopen(var, "w");
+
 							while (cont == 1)
 							{
 								sleep(1);
 								srand(time(NULL) + 2);
 								fuel = fuel - ( rand() % 100 + 100 );
 								sleep(1);
-								if (fuel <= 0)
+								if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+									fprintf(file, "successful mission\n");
+								else if (fuel <= 0)
 								{
 									cont = 0;
-									fprintf(file, "mission unsuccessful\n");
+									fprintf(file, "unsuccessful mission\n");
 									exit(0);
 								}
 								else if (missiles <= 0)
+								{
 									ret = 1;
+									dist_ret = dist_go;
+								}
 	
 								sleep(1);
+								t = 0;
+								time(&t);
 								tm_info = localtime(&t);
 								strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
 								fprintf(file, "%s\n", outTime);
@@ -152,15 +163,109 @@ int main(void)
 				{
 					child2 = sub;
 					printf("child2 = %d\n", child2);
+
+					// Calculations
+						sprintf(var, "/dev/pts/%d", term[1]);
+						file = fopen(var, "w");
+
+						while (cont == 1)
+						{
+							sleep(1);
+							srand(time(NULL) + 2);
+							fuel = fuel - ( rand() % 100 + 100 );
+							sleep(1);
+							if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+								fprintf(file, "successful mission\n");
+							else if (fuel <= 0)
+							{
+								cont = 0;
+								fprintf(file, "unsuccessful mission\n");
+								exit(0);
+							}
+							else if (missiles <= 0)
+							{
+								ret = 1;
+								dist_ret = dist_go;
+							}
+							sleep(1);
+							t = 0;
+							time(&t);
+							tm_info = localtime(&t);
+							strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+							fprintf(file, "%s\n", outTime);
+	
+							if (ret == 0)
+							{
+								srand(time(NULL) + 3);
+								dist_go = dist_go + ( rand() % 5 + 5);
+								fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_go);
+							}
+							else
+							{
+								srand(time(NULL) + 4);
+								dist_ret = dist_ret - ( rand() % 5 + 3);
+								fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_ret);
+							}
+						}
 				}					
 			}
 			else	// child1
 			{
 				child1 = sub;
 				printf("child1 = %d\n", child1);
+
+				// Calculations
+					sprintf(var, "/dev/pts/%d", term[0]);
+					file = fopen(var, "w");
+
+					while (cont == 1)
+					{
+						sleep(1);
+						srand(time(NULL) + 2);
+						fuel = fuel - ( rand() % 100 + 100 );
+						sleep(1);
+						if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+							fprintf(file, "successful mission\n");
+						else if (fuel <= 0)
+						{
+							cont = 0;
+							fprintf(file, "unsuccessful mission\n");
+							exit(0);
+						}
+						else if (missiles <= 0)
+						{
+							ret = 1;
+							dist_ret = dist_go;
+						}
+						sleep(1);
+						t = 0;
+						time(&t);
+						tm_info = localtime(&t);
+						strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+						fprintf(file, "%s\n", outTime);
+	
+						if (ret == 0)
+						{
+							srand(time(NULL) + 3);
+							dist_go = dist_go + ( rand() % 5 + 5);
+							fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 1, fuel, missiles, dist_go);
+						}
+						else
+						{
+							srand(time(NULL) + 4);
+							dist_ret = dist_ret - ( rand() % 5 + 3);
+							fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 1, fuel, missiles, dist_ret);
+						}
+					}
 			}
-			sleep(2);
+	//		sleep(2);
 		}
+		else
+		{
+			parent = sub;
+			printf("parent = %d\tchild1 = %d\tchild2 = %d\tchild3 = %d\tchild4 = %d\n", parent, child1, child2, child3, child4);
+		}
+
 		sleep(1);
 
 

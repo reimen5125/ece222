@@ -82,6 +82,8 @@ int main(void)
 		char var3[20];
 		char varPar[20];
 		int returnStatus;
+		int turn = 0;
+		char childVar[20];
 
 	// Memory allocation
 		term = (int *)calloc(4, sizeof(int));
@@ -138,6 +140,7 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[0]);
 			file = fopen(var, "w");
+//			currentChild = 1;
 
 			while (cont == 1)
 			{
@@ -157,10 +160,16 @@ int main(void)
 					done++;
 					exit(0);
 				}
-				else if (missiles <= 0)
+				else if (missiles <= 0 && turn == 0)
 				{
 					ret = 1;
 					dist_ret = dist_go;
+					done++;
+					turn = 1;
+				}
+				else if (missiles <= 0 && turn == 1)
+				{
+					dist_ret--;
 				}
 				sleep(1);
 				t = 0;
@@ -187,6 +196,7 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[1]);
 			file = fopen(var, "w");
+//			currentChild = 2;
 
 			while (cont == 1)
 			{
@@ -203,11 +213,16 @@ int main(void)
 					done++;
 					exit(0);
 				}
-				else if (missiles <= 0)
+				else if (missiles <= 0 && turn == 0)
 				{
 					ret = 1;
 					dist_ret = dist_go;
 					done++;
+					turn = 1;
+				}
+				else if (missiles <= 0 && turn == 1)
+				{
+					dist_ret--;
 				}
 				sleep(1);
 				t = 0;
@@ -234,6 +249,7 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[2]);
 			file = fopen(var, "w");
+//			currentChild = 3;
 
 			while (cont == 1)
 			{
@@ -250,11 +266,16 @@ int main(void)
 					done++;
 					exit(0);
 				}
-				else if (missiles <= 0)
+				else if (missiles <= 0 && turn == 0)
 				{
 					ret = 1;
 					dist_ret = dist_go;
 					done++;
+					turn = 1;
+				}
+				else if (missiles <= 0 && turn == 1)
+				{
+					dist_ret--;
 				}
 
 				sleep(1);
@@ -319,30 +340,38 @@ int main(void)
 				else if (strstr(command, "q"))
 				{
 //					kill(child4, SIGFPE);
+					kill(child4, SIGKILL);
 					done = 3;
 					break;
 //					exit(0);
 				}
-				else if (strstr(command, "s1"))
+/*				else if (strstr(command, "s1"))
 				{
 //					sprintf(var, "/dev/pts/%d", term[0]);
 //					file = fopen(var, "w");
 					kill(child1, SIGKILL);//SIGKILL);
+//					waitpid(child1, &returnStatus, 0);
+//					printf("Sub 1 killed.\n");
 				}
 				else if (strstr(command, "s2"))
 					kill(child2, SIGKILL);
 				else if (strstr(command, "s3"))
 					kill(child3, SIGKILL);
-			}
+*/			}
 
+//			sprintf(childVar, "/dev/pts/%d", currentChild);
+//			file = fopen(childVar, "w");
 			if (fuel < 500)
 				printf("Sub running out of fuel!\n");
+//				fprintf(file, "Sub running out of fuel!\n");
+//			fclose(file);
 		}
 	}
 	else
 	{
 		parent = getpid();
-		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\nchild4 = %d\n", parent, child1, child2, child3, child4);
+//		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\nchild4 = %d\n", parent, child1, child2, child3, child4);
+		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\n", parent, child1, child2, child3);
 
 		sprintf(var1, "/dev/pts/%d", child1);
 		sprintf(var2, "/dev/pts/%d", child2);
@@ -362,10 +391,11 @@ int main(void)
 		}
 
 	}
-	waitpid(currentChild, &returnStatus, 0);
-//	waitpid(child2, &returnStatus, 0);
-//	waitpid(child3, &returnStatus, 0);
-//	waitpid(child4, &returnStatus, 0);
+//	waitpid(currentChild, &returnStatus, 0);
+	waitpid(child4, &returnStatus, 0);
+	waitpid(child3, &returnStatus, 0);
+	waitpid(child1, &returnStatus, 0);
+	waitpid(child2, &returnStatus, 0);
 //	sleep(20);
 
 	free(term);

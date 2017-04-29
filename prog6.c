@@ -51,7 +51,7 @@ void launchMissile (int signum)
 void addFuel (int signum)
 {
 	fuel = 5000;
-	printf("Sub %d has fuel level of %d gallons.\n", currentChild, fuel);
+	printf("Sub has fuel level of %d gallons.\n", fuel);
 }
 
 // int kill(pid_t pid, int sig);
@@ -60,6 +60,7 @@ int main(void)
 {
 	// Variable Definition
 		FILE *file;
+		FILE *parentFile;
 		char var[20];
 		time_t t;
 		int parent;
@@ -81,9 +82,12 @@ int main(void)
 		char var2[20];
 		char var3[20];
 		char varPar[20];
-		int returnStatus;
+		int returnStatus1 = 1;
+		int returnStatus2 = 1;
+		int returnStatus3 = 1;
+		int returnStatus4;
 		int turn = 0;
-		char childVar[20];
+//		char childVar[20];
 
 	// Memory allocation
 		term = (int *)calloc(4, sizeof(int));
@@ -114,7 +118,7 @@ int main(void)
 		}
 
 	// Print to terminals
-		for (i = 0; i < found; i++)
+/*		for (i = 0; i < found; i++)
 		{
 			sprintf(var, "/dev/pts/%d", term[i]);
 			file = fopen(var, "w");
@@ -122,6 +126,7 @@ int main(void)
 			if (file != NULL)
 				fclose(file);
 		}
+*/
 
 	// Print start date and time of the mission
 		time(&t);
@@ -134,11 +139,15 @@ int main(void)
 		missiles = rand() % 4 + 6;	// initial missiles (5-10) [-]
 		dist_go = 0;	// initial distance from base (0) [miles]
 		cont = 1;
+
+	sprintf(var, "/dev/pts/%d", term[0]);
+	parentFile = fopen(var, "w");
+
 	// Fork children and analyze information for each
 	if (!(child1 = fork()))
 	{
 		// Calculations
-			sprintf(var, "/dev/pts/%d", term[0]);
+			sprintf(var, "/dev/pts/%d", term[1]);
 			file = fopen(var, "w");
 //			currentChild = 1;
 
@@ -150,15 +159,22 @@ int main(void)
 				sleep(1);
 				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
 				{
+
+					cont = 0;
 					fprintf(file, "successful mission\n");
 					done++;
+					fprintf(parentFile, "done child1 = %d\n", done);
+					break;
 				}
 				else if (fuel <= 0)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
+					fprintf(parentFile, "Sub 1 dead in the water.\n");
+					fprintf(file, "Rescue is on the way, sub 1.\n");
 					done++;
-					exit(0);
+					fprintf(parentFile, "done child1 = %d\n", done);
+					break;
 				}
 				else if (missiles <= 0 && turn == 0)
 				{
@@ -171,6 +187,9 @@ int main(void)
 				{
 					dist_ret--;
 				}
+				else if (fuel <= 500)
+					fprintf(parentFile, "Sub 1 running out of fuel!\n");
+
 				sleep(1);
 				t = 0;
 				time(&t);
@@ -190,11 +209,13 @@ int main(void)
 					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 1, fuel, missiles, dist_ret);
 				}
 			}
+			returnStatus1 = 0;
+			return(returnStatus1);
 	}
 	else if (!(child2 = fork()))
 	{
 		// Calculations
-			sprintf(var, "/dev/pts/%d", term[1]);
+			sprintf(var, "/dev/pts/%d", term[2]);
 			file = fopen(var, "w");
 //			currentChild = 2;
 
@@ -205,13 +226,22 @@ int main(void)
 				fuel = fuel - ( rand() % 100 + 100 );
 				sleep(1);
 				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+				{
+					cont = 0;
 					fprintf(file, "successful mission\n");
+					done++;
+					fprintf(parentFile, "done child2 = %d\n", done);
+					break;
+				}
 				else if (fuel <= 0)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
+					fprintf(parentFile, "Sub 2 dead in the water.\n");
+					fprintf(file, "Rescue is on the way, sub 2.\n");
 					done++;
-					exit(0);
+					fprintf(parentFile, "done child2 = %d\n", done);
+					break;
 				}
 				else if (missiles <= 0 && turn == 0)
 				{
@@ -224,6 +254,9 @@ int main(void)
 				{
 					dist_ret--;
 				}
+				else if (fuel <= 500)
+					fprintf(parentFile, "Sub 2 running out of fuel!\n");
+
 				sleep(1);
 				t = 0;
 				time(&t);
@@ -243,11 +276,13 @@ int main(void)
 					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_ret);
 				}
 			}
+			returnStatus2 = 0;
+			return(returnStatus2);
 	}
 	else if (!(child3 = fork()))
 	{
 		// Calculations
-			sprintf(var, "/dev/pts/%d", term[2]);
+			sprintf(var, "/dev/pts/%d", term[3]);
 			file = fopen(var, "w");
 //			currentChild = 3;
 
@@ -258,13 +293,22 @@ int main(void)
 				fuel = fuel - ( rand() % 100 + 100 );
 				sleep(1);
 				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
+				{
+					cont = 0;
 					fprintf(file, "successful mission\n");
+					done++;
+					fprintf(parentFile, "done child3 = %d\n", done);
+					break;
+				}
 				else if (fuel <= 0)
 				{
 					cont = 0;
 					fprintf(file, "unsuccessful mission\n");
 					done++;
-					exit(0);
+					fprintf(parentFile, "done child3 = %d\n", done);
+					fprintf(parentFile, "Sub 3 dead in the water.\n");
+					fprintf(file, "Rescue is on the way, sub 3.\n");
+					break;
 				}
 				else if (missiles <= 0 && turn == 0)
 				{
@@ -277,6 +321,9 @@ int main(void)
 				{
 					dist_ret--;
 				}
+				else if (fuel <= 500)
+					fprintf(parentFile, "Sub 3 running out of fuel!\n");
+
 
 				sleep(1);
 				t = 0;
@@ -298,6 +345,8 @@ int main(void)
 					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 3, fuel, missiles, dist_ret);
 				}
 			}
+		returnStatus3 = 0;
+		return(returnStatus3);
 	}
 	else if (!(child4 = fork()))
 	{
@@ -339,25 +388,20 @@ int main(void)
 				}
 				else if (strstr(command, "q"))
 				{
-//					kill(child4, SIGFPE);
+					kill(child1, SIGKILL);
+					kill(child2, SIGKILL);
+					kill(child3, SIGKILL);
 					kill(child4, SIGKILL);
 					done = 3;
 					break;
-//					exit(0);
 				}
-/*				else if (strstr(command, "s1"))
-				{
-//					sprintf(var, "/dev/pts/%d", term[0]);
-//					file = fopen(var, "w");
-					kill(child1, SIGKILL);//SIGKILL);
-//					waitpid(child1, &returnStatus, 0);
-//					printf("Sub 1 killed.\n");
-				}
+				else if (strstr(command, "s1"))
+					kill(child1, SIGKILL);
 				else if (strstr(command, "s2"))
 					kill(child2, SIGKILL);
 				else if (strstr(command, "s3"))
 					kill(child3, SIGKILL);
-*/			}
+			}
 
 //			sprintf(childVar, "/dev/pts/%d", currentChild);
 //			file = fopen(childVar, "w");
@@ -366,6 +410,8 @@ int main(void)
 //				fprintf(file, "Sub running out of fuel!\n");
 //			fclose(file);
 		}
+		returnStatus4 = 0;
+		return(returnStatus4);
 	}
 	else
 	{
@@ -386,16 +432,26 @@ int main(void)
 			strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
 			fprintf(file, "%s\n", outTime);
 
+			kill(child1, SIGKILL);
+			kill(child2, SIGKILL);
+			kill(child3, SIGKILL);
 			kill(child4, SIGKILL);
+//			SIGKILL(child4, SIGKILL);
 //			kill(child4, SIGFPE);
 		}
 
 	}
-//	waitpid(currentChild, &returnStatus, 0);
-	waitpid(child4, &returnStatus, 0);
-	waitpid(child3, &returnStatus, 0);
-	waitpid(child1, &returnStatus, 0);
-	waitpid(child2, &returnStatus, 0);
+	if (returnStatus1 == 0)
+		kill(child1, SIGKILL);
+	if (returnStatus2 == 0)
+		kill(child2, SIGKILL);
+	if (returnStatus3 == 0)
+		kill(child3, SIGKILL);
+	waitpid(-1, &returnStatus1, 0);
+	waitpid(-1, &returnStatus2, 0);
+	waitpid(-1, &returnStatus3, 0);
+//	waitpid(-1, &returnStatus4, 0);
+//	waitpid(child2, &returnStatus, 0);
 //	sleep(20);
 
 	free(term);

@@ -43,9 +43,9 @@ void launchMissile (int signum)
 {
 	missiles = missiles - 1;
 	if (missiles <= 0)
-		printf("Sub %d has no ordinance left.  Returning to base.\n", currentChild);
+		printf("Sub has no ordinance left.  Returning to base.\n");
 	else
-		printf("Missile was launched.  %d missiles remaining for sub %d.\n", missiles, currentChild);
+		printf("Missile was launched.  %d missiles remaining for sub.\n", missiles);
 }
 
 void addFuel (int signum)
@@ -81,6 +81,7 @@ int main(void)
 		char var2[20];
 		char var3[20];
 		char varPar[20];
+		int returnStatus;
 
 	// Memory allocation
 		term = (int *)calloc(4, sizeof(int));
@@ -302,31 +303,16 @@ int main(void)
 				}
 				else if (strstr(command, "r1"))
 				{
-					printf("confirmed\n");
-					sprintf(var, "/dev/pts/%d", term[0]);
-					file = fopen(var, "w");
-//					fprintf(file, "Sub 1 killed\n");
-//					kill(SIGFPE, sigkill);
-//					kill(SIGFPE, sigkill);
-//					kill(term[0], SIGFPE);
-//					kill(term[0], sigkill);
-
-//					kill(term[0], SIGUSR2);
-//					sigkill1(getpid(), SIGKILL);
-					kill(getpid(), SIGKILL);
+					kill(child1, SIGUSR2);
 					currentChild = 1;
 				}
 				else if (strstr(command, "r2"))
 				{
-					file = fopen(var2, "w");
-					fprintf(file, "Sub 2 killed\n");
 					kill(child2, SIGUSR2);
 					currentChild = 2;
 				}
 				else if (strstr(command, "r3"))
 				{
-					file = fopen(var3, "w");
-					fprintf(file, "Sub 3 killed\n");
 					kill(child3, SIGUSR2);
 					currentChild = 3;
 				}
@@ -339,20 +325,18 @@ int main(void)
 				}
 				else if (strstr(command, "s1"))
 				{
-					sprintf(var, "/dev/pts/%d", term[0]);
-					file = fopen(var, "w");
+//					sprintf(var, "/dev/pts/%d", term[0]);
+//					file = fopen(var, "w");
 					kill(child1, SIGKILL);//SIGKILL);
 				}
 				else if (strstr(command, "s2"))
 					kill(child2, SIGKILL);
 				else if (strstr(command, "s3"))
 					kill(child3, SIGKILL);
-
-//				kill(child3, SIGUSR2);
-//				printf("testing, testing");
-
 			}
-//				printf("testing, testing");
+
+			if (fuel < 500)
+				printf("Sub running out of fuel!\n");
 		}
 	}
 	else
@@ -378,7 +362,11 @@ int main(void)
 		}
 
 	}
-	sleep(7);
+	waitpid(currentChild, &returnStatus, 0);
+//	waitpid(child2, &returnStatus, 0);
+//	waitpid(child3, &returnStatus, 0);
+//	waitpid(child4, &returnStatus, 0);
+//	sleep(20);
 
 	free(term);
 

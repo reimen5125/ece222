@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -28,9 +27,7 @@ int done = 0;
 
 void sigkill1 (int signum)
 {
-//	kill(currentChild, SIGFPE);
 }
-
 
 void launchMissile (int signum)
 {
@@ -46,8 +43,6 @@ void addFuel (int signum)
 	fuel = 5000;
 	printf("Sub has fuel level of %d gallons.\n", fuel);
 }
-
-// int kill(pid_t pid, int sig);
 
 int main(void)
 {
@@ -80,7 +75,6 @@ int main(void)
 		int returnStatus3 = 1;
 		int returnStatus4;
 		int turn = 0;
-//		char childVar[20];
 
 	// Memory allocation
 		term = (int *)calloc(4, sizeof(int));
@@ -92,8 +86,6 @@ int main(void)
 		
 
 	// Terminal number(s) find
-//		system("ls -l /dev/pts");
-
 		found = 0;
 		i = 0;
 		while (i < 2000 && found < 4)
@@ -109,17 +101,6 @@ int main(void)
 			if (file != NULL)
 				fclose(file);
 		}
-
-	// Print to terminals
-/*		for (i = 0; i < found; i++)
-		{
-			sprintf(var, "/dev/pts/%d", term[i]);
-			file = fopen(var, "w");
-//			fprintf(file, "testing, testing\n");
-			if (file != NULL)
-				fclose(file);
-		}
-*/
 
 	// Print start date and time of the mission
 		time(&t);
@@ -142,13 +123,12 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[1]);
 			file = fopen(var, "w");
-//			currentChild = 1;
 
 			while (cont == 1)
 			{
 				sleep(1);
 				srand(time(NULL) + 2);
-				fuel = fuel - ( rand() % 100 + 100 );
+				fuel = fuel - ( (rand() + 1) % 100 + 100 );
 				sleep(1);
 				if (dist_ret <= 0 && ret == 1 && missiles <= 0)
 				{
@@ -183,12 +163,14 @@ int main(void)
 				else if (fuel <= 500)
 					fprintf(parentFile, "Sub 1 running out of fuel!\n");
 
-				sleep(1);
-				t = 0;
-				time(&t);
-				tm_info = localtime(&t);
-				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
-				fprintf(file, "%s\n", outTime);
+				// Print time
+					sleep(1);
+					t = 0;
+					time(&t);
+					tm_info = localtime(&t);
+					strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+					fprintf(file, "%s\n", outTime);
+
 				if (ret == 0)
 				{
 					srand(time(NULL) + 3);
@@ -210,7 +192,6 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[2]);
 			file = fopen(var, "w");
-//			currentChild = 2;
 
 			while (cont == 1)
 			{
@@ -250,16 +231,18 @@ int main(void)
 				else if (fuel <= 500)
 					fprintf(parentFile, "Sub 2 running out of fuel!\n");
 
-				sleep(1);
-				t = 0;
-				time(&t);
-				tm_info = localtime(&t);
-				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
-				fprintf(file, "%s\n", outTime);
+				// Print time
+					sleep(1);
+					t = 0;
+					time(&t);
+					tm_info = localtime(&t);
+					strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+					fprintf(file, "%s\n", outTime);
+
 				if (ret == 0)
 				{
 					srand(time(NULL) + 3);
-					dist_go = dist_go + ( rand() % 5 + 5);
+					dist_go = dist_go + ( rand() % 5 + 3);
 					fprintf(file, "\tBomber %d to base, %d gallons left, %d bombs left,\n\t%d miles from base.\n", 2, fuel, missiles, dist_go);
 				}
 				else
@@ -277,7 +260,6 @@ int main(void)
 		// Calculations
 			sprintf(var, "/dev/pts/%d", term[3]);
 			file = fopen(var, "w");
-//			currentChild = 3;
 
 			while (cont == 1)
 			{
@@ -317,13 +299,13 @@ int main(void)
 				else if (fuel <= 500)
 					fprintf(parentFile, "Sub 3 running out of fuel!\n");
 
-
-				sleep(1);
-				t = 0;
-				time(&t);
-				tm_info = localtime(&t);
-				strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
-				fprintf(file, "%s\n", outTime);
+				// Print time
+					sleep(1);
+					t = 0;
+					time(&t);
+					tm_info = localtime(&t);
+					strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+					fprintf(file, "%s\n", outTime);
 
 				if (ret == 0)
 				{
@@ -343,10 +325,8 @@ int main(void)
 	}
 	else if (!(child4 = fork()))
 	{
-//		while (kill(var1, 0) && kill(var2, 0) && kill(var3, 0) && kill(varPar, 0))
 		while (1)
 		{
-//			fgets(dictStr, 46, file) != NULL
 			if ( fgets(command, 20, stdin) != NULL )
 			{
 				if (strstr(command, "l1"))
@@ -413,49 +393,32 @@ int main(void)
 	else
 	{
 		parent = getpid();
-//		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\nchild4 = %d\n", parent, child1, child2, child3, child4);
 		printf("parent = %d\nchild1 = %d\nchild2 = %d\nchild3 = %d\n", parent, child1, child2, child3);
 
 		sprintf(var1, "/dev/pts/%d", child1);
 		sprintf(var2, "/dev/pts/%d", child2);
 		sprintf(var3, "/dev/pts/%d", child3);
 		sprintf(varPar, "/dev/pts/%d", parent);
-
-/*		if (done == 3)
-		{	
-			t = 0;
-			time(&t);
-			tm_info = localtime(&t);
-			strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
-			fprintf(file, "%s\n", outTime);
-
-			kill(child1, SIGKILL);
-			kill(child2, SIGKILL);
-			kill(child3, SIGKILL);
-			kill(child4, SIGKILL);
-//			SIGKILL(child4, SIGKILL);
-//			kill(child4, SIGFPE);
-		}
-*/
-
 	}
-	if (returnStatus1 == 0)
-		kill(child1, SIGKILL);
-	if (returnStatus2 == 0)
-		kill(child2, SIGKILL);
-	if (returnStatus3 == 0)
-		kill(child3, SIGKILL);
-	waitpid(-1, &returnStatus1, 0);
-	waitpid(-1, &returnStatus2, 0);
-	waitpid(-1, &returnStatus3, 0);
-
 	
-	t = 0;
-	time(&t);
-	tm_info = localtime(&t);
-	printf("Date and time:  %s\n", ctime(&t));
-//	strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
-//	printf("%s\n", outTime);
+	// Terminate any subs that are finished running
+		if (returnStatus1 == 0)
+			kill(child1, SIGKILL);
+		if (returnStatus2 == 0)
+			kill(child2, SIGKILL);
+		if (returnStatus3 == 0)
+			kill(child3, SIGKILL);
+
+	// Wait for the 0 return status of the subs so the parent will not finish running until they are finished
+		waitpid(-1, &returnStatus1, 0);
+		waitpid(-1, &returnStatus2, 0);
+		waitpid(-1, &returnStatus3, 0);
+
+	// Print final date and time
+		t = 0;
+		time(&t);
+		tm_info = localtime(&t);
+		printf("Date and time:  %s\n", ctime(&t));
 
 	free(term);
 

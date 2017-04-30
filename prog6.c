@@ -32,13 +32,6 @@ void sigkill1 (int signum)
 }
 
 
-/*
-void sigkill(int sig)
-{
-    kill(currentChild, SIGKILL);
-}
-*/
-
 void launchMissile (int signum)
 {
 	missiles = missiles - 1;
@@ -396,19 +389,23 @@ int main(void)
 					break;
 				}
 				else if (strstr(command, "s1"))
+				{
+					fprintf(parentFile, "Sub 1 terminated.\n");
 					kill(child1, SIGKILL);
+				}
 				else if (strstr(command, "s2"))
+				{
+					fprintf(parentFile, "Sub 2 terminated.\n");
 					kill(child2, SIGKILL);
+				}
 				else if (strstr(command, "s3"))
+				{
+					fprintf(parentFile, "Sub 3 terminated.\n");
 					kill(child3, SIGKILL);
+				}
+				else
+					fprintf(parentFile, "Invalid input.\n");
 			}
-
-//			sprintf(childVar, "/dev/pts/%d", currentChild);
-//			file = fopen(childVar, "w");
-			if (fuel < 500)
-				printf("Sub running out of fuel!\n");
-//				fprintf(file, "Sub running out of fuel!\n");
-//			fclose(file);
 		}
 		returnStatus4 = 0;
 		return(returnStatus4);
@@ -424,7 +421,7 @@ int main(void)
 		sprintf(var3, "/dev/pts/%d", child3);
 		sprintf(varPar, "/dev/pts/%d", parent);
 
-		if (done == 3)
+/*		if (done == 3)
 		{	
 			t = 0;
 			time(&t);
@@ -439,6 +436,7 @@ int main(void)
 //			SIGKILL(child4, SIGKILL);
 //			kill(child4, SIGFPE);
 		}
+*/
 
 	}
 	if (returnStatus1 == 0)
@@ -450,9 +448,14 @@ int main(void)
 	waitpid(-1, &returnStatus1, 0);
 	waitpid(-1, &returnStatus2, 0);
 	waitpid(-1, &returnStatus3, 0);
-//	waitpid(-1, &returnStatus4, 0);
-//	waitpid(child2, &returnStatus, 0);
-//	sleep(20);
+
+	
+	t = 0;
+	time(&t);
+	tm_info = localtime(&t);
+	printf("Date and time:  %s\n", ctime(&t));
+//	strftime(outTime, 26, "Time: %H:%M:%S\n", tm_info);
+//	printf("%s\n", outTime);
 
 	free(term);
 
